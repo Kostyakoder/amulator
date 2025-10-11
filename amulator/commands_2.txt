@@ -1,0 +1,5 @@
+mkdir B
+cd B
+mkdir B_child
+ls
+who

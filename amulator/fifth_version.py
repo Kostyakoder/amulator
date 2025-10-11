@@ -139,6 +139,58 @@ def get_user_directory():
     return default_path
 
 
+def process_command(node, command_line):
+    command = command_line.split()
+    if not command:
+        return node
+
+    try:
+        match command:
+            case ["exit"]:
+                return None
+            case ['mkdir', *names]:
+                mkdir(node, names)
+            case ['touch', *names]:
+                touch(node, names)
+            case ['uniq']:
+                uniq()
+            case ['ls']:
+                ls(node)
+            case ["cd", name]:
+                new_node = cd(node, name)
+                if new_node != node:
+                    return new_node
+            case ['echo', *args]:
+                print(*args)
+            case ['rmdir', *names]:
+                rmdir(node, names)
+            case ['pwd']:
+                print(pwd(node))
+            case ['cat', *names]:
+                cat(node, names)
+            case ['who']:
+                print(who())
+            case ['reload']:
+                return reload_from_disk(node)
+            case _:
+                print(f"Unknown command: {command[0]}")
+        return node
+    except Exception as e:
+        print(f"Error: {e}")
+        return node
+def run_commands_from_file(node, filename):
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            for line in f:
+                command = line.strip()
+                if command and not command.startswith('#'):
+                    print(f'{pwd(node)}> {command}')
+                    process_command(node, command)
+    except FileNotFoundError:
+        print(f"File {filename} not found")
+    except Exception as e:
+        print(f"Error reading file: {e}")
+
 
 def repl(node):
     while True:
@@ -186,8 +238,11 @@ if __name__ == "__main__":
         user_path = get_user_directory()
 
         root = load_real_directory(user_path)
-        repl(root)
+        # repl(root)
+        command_file = "commands_2.txt"
+        run_commands_from_file(root, command_file)
     except Exception as e:
         root = Node('dir', {})
         mkdir(root, ['home'])
         repl(root)
+
