@@ -27,7 +27,7 @@ if __name__ == "__main__":
         for cmd in commands:
             cmd = cmd.strip()
             if cmd:
-                print(f"{os.getcwd()} {prompt}> {cmd}")
+                print(f"{os.getcwd()} {prompt}> {cmd}") # просто путь в 3 этапе
                 print(act(cmd))
                 if (act(cmd) == f"{cmd}: command not found"):
                     break
